@@ -152,7 +152,7 @@ dependencies:
     - torchmetrics==0.6.0
     - tqdm==4.63.1
     - transformers==4.9.2
-    - tree-sitter==0.2.2
+    - tree-sitter==0.24.0
     - typing==3.7.4.3
     - typing-extensions==4.2.0
     - ujson==5.3.0
@@ -164,4 +164,4 @@ dependencies:
     - xxhash==3.0.0
     - yarl==1.7.2
     - zipp==3.8.0
-prefix: /mnt/efs/people/ptky/miniconda3/envs/cl
+prefix: /home/khanh/miniconda3/envs/codetask

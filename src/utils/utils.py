@@ -13,10 +13,10 @@ import torch
 import torch.nn as nn
 import time
 from tqdm import tqdm
-from collections import defaultdict as ddict
+# from collections import defaultdict as ddict
 from utils._utils import *
-from transformers import AdamW, Adafactor, get_linear_schedule_with_warmup
-
+from transformers import Adafactor, get_linear_schedule_with_warmup
+from torch.optim import AdamW
 
 
 logger = logging.getLogger(__name__)
@@ -149,8 +149,9 @@ def load_and_cache_gen_data(args, task, sub_task, filename, pool, tokenizer, spl
     assert len(params) == len(param_names)
     identifier = "-".join(f'{param_names[i]}_{params[i]}' for i in range(len(params)))
     savename = f"{split_tag}{'_src' if only_src else ''}_{identifier}_{data_tag}".replace('/', '_')
+    ### Cache filename for dataset
     cache_fn = f'{args.cache_path}/{task}/{savename}.pt'
-    examples = read_examples(filename, args.data_num, task)
+    examples = read_examples(filename, args.data_num, task, split_tag)
 
     if is_sample:
         examples = random.sample(examples, min(bleu_samples, len(examples)))
@@ -165,9 +166,11 @@ def load_and_cache_gen_data(args, task, sub_task, filename, pool, tokenizer, spl
         logger.info("Load cache data from %s", cache_fn)
         data = torch.load(cache_fn)
     else:
+    ###
         if is_sample:
             logger.info(f"Sample {min(bleu_samples, len(examples))} data for computing bleu from {filename}")
         else:
+        ###
             logger.info("Create cache data into %s", cache_fn)
         tuple_examples = [(example, idx, tokenizer, args, split_tag, task, sub_task, max_source_length, max_target_length) for idx, example in enumerate(examples)]
         features = pool.map(convert_examples_to_features, tqdm(tuple_examples, total=len(tuple_examples)))
@@ -352,7 +355,7 @@ def get_filenames(data_root, task, sub_task, split=''):
         return train_fn, dev_fn, test_fn
 
 
-def read_examples(filename, data_num, task):
+def read_examples(filename, data_num, task, split):
     read_example_dict = {
         'summarize': read_summarize_examples,
         'refine': read_refine_examples,
@@ -361,7 +364,7 @@ def read_examples(filename, data_num, task):
         'clone': read_clone_examples,
         'defect': read_defect_examples,
     }
-    return read_example_dict[task](filename, data_num)
+    return read_example_dict[task](filename, data_num, split)
 
 
 def calc_stats(examples, tokenizer=None, is_tokenize=False):
@@ -401,6 +404,7 @@ def get_elapse_time(t0):
 
 
 def setup_wandb_logger(args):
+    wandb.login(key='787d9371a4aa4971b40ac864e5ae34e175d6e9c3')
     wandb_writer = wandb.init(project=args.project_name, dir=args.output_dir, save_code=False, name=args.name, config=args)#, group=args.group)
 
     src_dir = Path(__file__).resolve().parent

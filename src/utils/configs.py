@@ -187,7 +187,10 @@ def set_dist(args):
     # Setup CUDA, GPU & distributed training
     if args.local_rank == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
-        args.n_gpu = torch.cuda.device_count()
+        if device.type == 'cuda':
+            args.n_gpu = torch.cuda.device_count()
+        else:
+            args.n_gpu = 1
     else:
         # Setup for distributed data parallel
         torch.cuda.set_device(args.local_rank)

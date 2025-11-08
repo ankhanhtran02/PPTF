@@ -18,8 +18,8 @@ from collections import defaultdict as ddict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.tensorboard import SummaryWriter
-from torch.utils.data import Subset
+# from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.data import Subset
 from models.models import build_or_load_gen_model
 from evaluator import smooth_bleu
 from evaluator.CodeBLEU import calc_code_bleu
@@ -111,9 +111,9 @@ def val_bleu_epoch(args, val_dataloader, val_examples, model, tokenizer, max_tar
 
         with open(output_fn, 'w') as f, open(gold_fn, 'w') as f1, open(src_fn, 'w') as f2:
             for pred_nl, gold in zip(pred_nls, val_examples):
-                f.write(pred_nl.strip() + '\n')
-                f1.write(target_dict[gold.target] + '\n')
-                f2.write(gold.source.strip() + '\n')
+                f.write(repr(pred_nl.strip()) + '\n')
+                f1.write(repr(target_dict[gold.target]) + '\n')
+                f2.write(repr(gold.source.strip()) + '\n')
             logger.info("Save the predictions into %s", output_fn)
     else:
         dev_accs, predictions = [], []
@@ -123,13 +123,13 @@ def val_bleu_epoch(args, val_dataloader, val_examples, model, tokenizer, max_tar
                 if 'summarize' in eval_task:
                     # for smooth-bleu4 evaluation
                     predictions.append(str(gold.idx) + '\t' + pred_nl)
-                    f.write(str(gold.idx) + '\t' + pred_nl.strip() + '\n')
-                    f1.write(str(gold.idx) + '\t' + gold.target.strip() + '\n')
-                    f2.write(str(gold.idx) + '\t' + gold.source.strip() + '\n')
+                    f.write(str(gold.idx) + '\t' + repr(pred_nl.strip()) + '\n')
+                    f1.write(str(gold.idx) + '\t' + repr(gold.target.strip()) + '\n')
+                    f2.write(str(gold.idx) + '\t' + repr(gold.source.strip()) + '\n')
                 else:
-                    f.write(pred_nl.strip() + '\n')
-                    f1.write(gold.target.strip() + '\n')
-                    f2.write(gold.source.strip() + '\n')
+                    f.write(repr(pred_nl.strip()) + '\n')
+                    f1.write(repr(gold.target.strip()) + '\n')
+                    f2.write(repr(gold.source.strip()) + '\n')
 
         if 'summarize' in eval_task:
             (goldMap, predictionMap) = smooth_bleu.computeMaps(predictions, gold_fn)
@@ -347,6 +347,7 @@ def main():
     config, model, tokenizer = build_or_load_gen_model(args)
 
     if all([t in BIGQUERY for t in args.stream.split(',')]):
+        ###
         datamodule = BigQueryDataModule(args, tokenizer)
     else:
         datamodule = CodeXGlueDataModule(args, tokenizer)

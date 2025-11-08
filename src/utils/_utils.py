@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
-
+from datasets import load_dataset
+import numpy as np
 
 def add_lang_by_task(target_str, task, sub_task):
     if task == 'summarize':
@@ -167,96 +168,101 @@ class CloneExample(object):
         self.url1 = url1
         self.url2 = url2
 
+split_dict = {'train':'train', 'test':'test', 'dev':'validation'}
+text_key_dict = {'CONCODE': 'nl',
+            'CodeTrans': 'java',
+            'CodeSearchNet': 'code',
+            'BFP': 'buggy'}
+label_key_dict = {'CONCODE': 'code',
+            'CodeTrans': 'cs',
+            'CodeSearchNet': 'docstring',
+            'BFP': 'fixed'}
 
-def read_translate_examples(filename, data_num):
+def read_translate_examples(filename, data_num, split):
     """Read examples from filename."""
     examples = []
-    assert len(filename.split(',')) == 2
-    src_filename = filename.split(',')[0]
-    trg_filename = filename.split(',')[1]
-    idx = 0
-    with open(src_filename) as f1, open(trg_filename) as f2:
-        for line1, line2 in zip(f1, f2):
-            src = line1.strip()
-            trg = line2.strip()
-            examples.append(
-                Example(
-                    idx=idx,
-                    source=src,
-                    target=trg,
-                )
-            )
-            idx += 1
-            if idx == data_num:
-                break
+    dataset = load_dataset('CM/codexglue_codetrans', split=split_dict[split])
+    text_key = text_key_dict['CodeTrans']
+    label_key = label_key_dict['CodeTrans']
+    if data_num != -1:
+        np.random.seed(0)
+        num_samples = min(data_num, dataset.shape[0])
+        idx_total = np.random.choice(np.arange(dataset.shape[0]), num_samples, replace=False)
+        dataset = dataset.select(idx_total)
+    for i, example in enumerate(dataset):
+        examples.append(
+            Example(
+                idx=i,
+                source=example[text_key].strip(),
+                target=example[label_key].strip(),
+            )    
+        )
     return examples
 
 
-def read_refine_examples(filename, data_num):
+def read_refine_examples(filename, data_num, split):
     """Read examples from filename."""
     examples = []
-    assert len(filename.split(',')) == 2
-    src_filename = filename.split(',')[0]
-    trg_filename = filename.split(',')[1]
-    idx = 0
-
-    with open(src_filename) as f1, open(trg_filename) as f2:
-        for line1, line2 in zip(f1, f2):
-            examples.append(
-                Example(
-                    idx=idx,
-                    source=line1.strip(),
-                    target=line2.strip(),
-                )
-            )
-            idx += 1
-            if idx == data_num:
-                break
+    dataset = load_dataset('ayeshgk/code_x_glue_cc_code_refinement_annotated', split=split_dict[split])
+    text_key = text_key_dict['BFP']
+    label_key = label_key_dict['BFP']
+    if data_num != -1:
+        np.random.seed(0)
+        num_samples = min(data_num, dataset.shape[0])
+        idx_total = np.random.choice(np.arange(dataset.shape[0]), num_samples, replace=False)
+        dataset = dataset.select(idx_total)
+    for i, example in enumerate(dataset):
+        examples.append(
+            Example(
+                idx=i,
+                source=example[text_key].strip(),
+                target=example[label_key].strip(),
+            )    
+        )
     return examples
 
 
-def read_concode_examples(filename, data_num):
+def read_concode_examples(filename, data_num, split):
     """Read examples from filename."""
     examples = []
-
-    with open(filename) as f:
-        for idx, line in enumerate(f):
-            x = json.loads(line)
-            examples.append(
-                Example(
-                    idx=idx,
-                    source=x["nl"].strip(),
-                    target=x["code"].strip()
-                )
-            )
-            idx += 1
-            if idx == data_num:
-                break
+    dataset = load_dataset('AhmedSSoliman/CodeXGLUE-CONCODE', split=split_dict[split])
+    text_key = text_key_dict['CONCODE']
+    label_key = label_key_dict['CONCODE']
+    if data_num != -1:
+        np.random.seed(0)
+        num_samples = min(data_num, dataset.shape[0])
+        idx_total = np.random.choice(np.arange(dataset.shape[0]), num_samples, replace=False)
+        dataset = dataset.select(idx_total)
+    for i, example in enumerate(dataset):
+        examples.append(
+            Example(
+                idx=i,
+                source=example[text_key].strip(),
+                target=example[label_key].strip(),
+            )    
+        )
     return examples
 
 
-def read_summarize_examples(filename, data_num):
+def read_summarize_examples(filename, data_num, split):
     """Read examples from filename."""
     examples = []
-    with open(filename, encoding="utf-8") as f:
-        for idx, line in enumerate(f):
-            line = line.strip()
-            js = json.loads(line)
-            if 'idx' not in js:
-                js['idx'] = idx
-            code = ' '.join(js['code_tokens']).replace('\n', ' ')
-            code = ' '.join(code.strip().split())
-            nl = ' '.join(js['docstring_tokens']).replace('\n', '')
-            nl = ' '.join(nl.strip().split())
-            examples.append(
-                Example(
-                    idx=idx,
-                    source=code,
-                    target=nl,
-                )
-            )
-            if idx + 1 == data_num:
-                break
+    dataset = load_dataset('semeru/code-text-ruby', split=split_dict[split])
+    text_key = text_key_dict['CodeSearchNet']
+    label_key = label_key_dict['CodeSearchNet']
+    if data_num != -1:
+        np.random.seed(0)
+        num_samples = min(data_num, dataset.shape[0])
+        idx_total = np.random.choice(np.arange(dataset.shape[0]), num_samples, replace=False)
+        dataset = dataset.select(idx_total)
+    for i, example in enumerate(dataset):
+        examples.append(
+            Example(
+                idx=i,
+                source=example[text_key].strip(),
+                target=example[label_key].strip(),
+            )    
+        )
     return examples
 
 

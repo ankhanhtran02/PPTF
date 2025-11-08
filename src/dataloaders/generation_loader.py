@@ -53,14 +53,16 @@ def get_args_by_task_model(task, sub_task=None, model_tag=None):
     if task == 'translate':
         src_len = 320
         trg_len = 256
-        epoch = 100
+        epoch = 1
+        # epoch = 100
         patience = 5
         tbs = 8
         ebs = 50
     elif task == 'summarize':
         src_len = 256
         trg_len = 128
-        epoch = 15
+        epoch = 1
+        # epoch = 15
         patience = 2
         tbs = 16
         ebs = 80
@@ -75,12 +77,14 @@ def get_args_by_task_model(task, sub_task=None, model_tag=None):
             trg_len = 240
             tbs = 8
             ebs = 50
-        epoch = 50
+        epoch = 1
+        # epoch = 50
         patience = 5
     elif task == 'concode':
         src_len = 320
         trg_len = 150
-        epoch = 30
+        epoch = 1
+        # epoch = 30
         patience = 3
         tbs = 16
         ebs = 50
@@ -125,7 +129,11 @@ class CodeXGlueDataModule:
     def __init__(self, args, tokenizer):
         super().__init__()
         self.args = args
-        self.world_size = self.args.n_gpu
+
+        if self.args.device.type == 'cuda':
+            self.world_size = self.args.n_gpu
+        else:
+            self.world_size = 1
 
         self.tokenizer = tokenizer
         self.pool = multiprocessing.Pool(self.args.cpu_cont)
@@ -148,6 +156,7 @@ class CodeXGlueDataModule:
         elif stream == 'tasks':
             pass
         elif stream is not None:
+            ###
             self.all_tasks = stream.split(',')
         elif stream is None and taskname is not None:
             sp = taskname.split('_')
@@ -380,7 +389,11 @@ class BigQueryDataModule:
     def __init__(self, args, tokenizer):
         super().__init__()
         self.args = args
-        self.world_size = self.args.n_gpu
+
+        if self.args.device.type == 'cuda':
+            self.world_size = self.args.n_gpu
+        else:
+            self.world_size = 1
 
         self.tokenizer = tokenizer
 

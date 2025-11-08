@@ -7,6 +7,7 @@ from evaluator.CodeBLEU.parser import (remove_comments_and_docstrings,
                                        index_to_code_token,
                                        tree_to_variable_index)
 from tree_sitter import Language, Parser
+from tree_sitter_language_pack import get_parser
 import os
 
 root_dir = os.path.dirname(__file__)
@@ -21,15 +22,26 @@ dfg_function = {
     'c_sharp': DFG_csharp,
 }
 
+lang_dict = {
+    'python': 'python',
+    'java': 'java',
+    'ruby': 'ruby',
+    'go': 'go',
+    'php': 'php',
+    'javascript': 'javascript',
+    'c_sharp': 'csharp',
+}
+
 
 def calc_dataflow_match(references, candidate, lang):
     return corpus_dataflow_match([references], [candidate], lang)
 
 
 def corpus_dataflow_match(references, candidates, lang):
-    LANGUAGE = Language(root_dir + '/parser/my-languages.so', lang)
-    parser = Parser()
-    parser.set_language(LANGUAGE)
+    # LANGUAGE = Language(root_dir + '/parser/my-languages.so', lang)
+    # parser = Parser()
+    # parser.set_language(LANGUAGE)
+    parser = get_parser(lang_dict[lang])
     parser = [parser, dfg_function[lang]]
     match_count = 0
     total_count = 0

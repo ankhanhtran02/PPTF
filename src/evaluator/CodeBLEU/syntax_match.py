@@ -7,6 +7,7 @@ from evaluator.CodeBLEU.parser import (remove_comments_and_docstrings,
                                        index_to_code_token,
                                        tree_to_variable_index)
 from tree_sitter import Language, Parser
+from tree_sitter_language_pack import get_parser
 import os
 
 root_dir = os.path.dirname(__file__)
@@ -20,15 +21,25 @@ dfg_function = {
     'c_sharp': DFG_csharp,
 }
 
+lang_dict = {
+    'python': 'python',
+    'java': 'java',
+    'ruby': 'ruby',
+    'go': 'go',
+    'php': 'php',
+    'javascript': 'javascript',
+    'c_sharp': 'csharp',
+}
 
 def calc_syntax_match(references, candidate, lang):
     return corpus_syntax_match([references], [candidate], lang)
 
 
 def corpus_syntax_match(references, candidates, lang):
-    JAVA_LANGUAGE = Language(root_dir + '/parser/my-languages.so', lang)
-    parser = Parser()
-    parser.set_language(JAVA_LANGUAGE)
+    # JAVA_LANGUAGE = Language(root_dir + '/parser/my-languages.so', lang)
+    # parser = Parser()
+    # parser.set_language(JAVA_LANGUAGE)
+    parser = get_parser(lang_dict[lang])
     match_count = 0
     total_count = 0
 
@@ -56,7 +67,7 @@ def corpus_syntax_match(references, candidates, lang):
                 node_stack.append([root_node, depth])
                 while len(node_stack) != 0:
                     cur_node, cur_depth = node_stack.pop()
-                    sub_tree_sexp_list.append([cur_node.sexp(), cur_depth])
+                    sub_tree_sexp_list.append([str(cur_node), cur_depth])
                     for child_node in cur_node.children:
                         if len(child_node.children) != 0:
                             depth = cur_depth + 1
