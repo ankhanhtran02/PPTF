@@ -291,7 +291,7 @@ def read_clone_examples(filename, data_num):
     """Read examples from filename."""
     index_filename = filename
     url_to_code = {}
-    with open('/'.join(index_filename.split('/')[:-1]) + '/data.jsonl') as f:
+    with open('/'.join(index_filename.split('/')[:-1]) + '/data.jsonl', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
             js = json.loads(line)
@@ -299,7 +299,7 @@ def read_clone_examples(filename, data_num):
             url_to_code[js['idx']] = code
 
     data = []
-    with open(index_filename) as f:
+    with open(index_filename, encoding='utf-8') as f:
         idx = 0
         for line in f:
             line = line.strip()

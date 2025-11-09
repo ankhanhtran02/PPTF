@@ -2,3 +2,4 @@ src/draft.py
 src/experiment/
 venv/
 __pycache__/
+.venv/

@@ -109,7 +109,7 @@ def val_bleu_epoch(args, val_dataloader, val_examples, model, tokenizer, max_tar
         val_acc = np.mean([int(p == g) for p, g in zip(pred_nls, golds)])
         results = {'em': val_acc * 100, 'bleu': 0, 'codebleu': 0}
 
-        with open(output_fn, 'w') as f, open(gold_fn, 'w') as f1, open(src_fn, 'w') as f2:
+        with open(output_fn, 'w', encoding='utf-8') as f, open(gold_fn, 'w', encoding='utf-8') as f1, open(src_fn, 'w', encoding='utf-8') as f2:
             for pred_nl, gold in zip(pred_nls, val_examples):
                 f.write(repr(pred_nl.strip()) + '\n')
                 f1.write(repr(target_dict[gold.target]) + '\n')
@@ -117,7 +117,7 @@ def val_bleu_epoch(args, val_dataloader, val_examples, model, tokenizer, max_tar
             logger.info("Save the predictions into %s", output_fn)
     else:
         dev_accs, predictions = [], []
-        with open(output_fn, 'w') as f, open(gold_fn, 'w') as f1, open(src_fn, 'w') as f2:
+        with open(output_fn, 'w', encoding='utf-8') as f, open(gold_fn, 'w', encoding='utf-8') as f1, open(src_fn, 'w', encoding='utf-8') as f2:
             for pred_nl, gold in zip(pred_nls, val_examples):
                 dev_accs.append(pred_nl.strip() == gold.target.strip())
                 if 'summarize' in eval_task:
@@ -196,7 +196,7 @@ def val_bleu_epoch_bigquery(args, val_dataloader, model, tokenizer, split, max_t
     src_fn = os.path.join(args.prediction_dir, "test_{}.src".format(fname))
 
     dev_accs = []
-    with open(output_fn, 'w') as f, open(gold_fn, 'w') as f1, open(src_fn, 'w') as f2:
+    with open(output_fn, 'w', encoding='utf-8') as f, open(gold_fn, 'w', encoding='utf-8') as f1, open(src_fn, 'w', encoding='utf-8') as f2:
         for pred_nl, gold in zip(pred_nls, val_examples):
             dev_accs.append(pred_nl.strip() == gold.target.strip())
             f.write(pred_nl.strip().replace("\n", "\\n").replace("\t", "\\t") + '\n')

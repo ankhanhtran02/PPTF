@@ -130,7 +130,7 @@ def add_args(parser):
     parser.add_argument("--adam_epsilon", default=1e-8, type=float, help="Epsilon for Adam optimizer.")
     parser.add_argument("--max_grad_norm", default=1.0, type=float, help="Max gradient norm.")
 
-    parser.add_argument("--num_workers", default=os.cpu_count(), type=int, )
+    parser.add_argument("--num_workers", default=0, type=int, )
     parser.add_argument("--pin_memory", default=True, type=bool, )
     parser.add_argument("--save_steps", default=-1, type=int, )
     parser.add_argument("--num_saves", default=10, type=int, )
