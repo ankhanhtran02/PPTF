@@ -10,9 +10,6 @@ This codebase has some code or ideas ported from the following repositories.
 2. [CodeT5](https://github.com/salesforce/CodeT5)
 3. [Learning to Prompt](https://github.com/google-research/l2p)
 
-#### Creating an environment
-Use the file `src/environment.yml` to create a conda environment. The following command can be used `conda env create --file=environment.yml`.
-
 #### Folder Structure
 ```
 src
