@@ -53,16 +53,14 @@ def get_args_by_task_model(task, sub_task=None, model_tag=None):
     if task == 'translate':
         src_len = 320
         trg_len = 256
-        epoch = 1
-        # epoch = 100
+        epoch = 100
         patience = 5
         tbs = 8
         ebs = 50
     elif task == 'summarize':
         src_len = 256
         trg_len = 128
-        epoch = 1
-        # epoch = 15
+        epoch = 15
         patience = 2
         tbs = 16
         ebs = 80
@@ -77,14 +75,12 @@ def get_args_by_task_model(task, sub_task=None, model_tag=None):
             trg_len = 240
             tbs = 8
             ebs = 50
-        epoch = 1
-        # epoch = 50
+        epoch = 50
         patience = 5
     elif task == 'concode':
         src_len = 320
         trg_len = 150
-        epoch = 1
-        # epoch = 30
+        epoch = 30
         patience = 3
         tbs = 16
         ebs = 50

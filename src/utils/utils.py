@@ -404,7 +404,7 @@ def get_elapse_time(t0):
 
 
 def setup_wandb_logger(args):
-    wandb.login(key='787d9371a4aa4971b40ac864e5ae34e175d6e9c3')
+    wandb.login(key=os.getenv('WANDB_API_KEY'))
     wandb_writer = wandb.init(project=args.project_name, dir=args.output_dir, save_code=False, name=args.name, config=args)#, group=args.group)
 
     src_dir = Path(__file__).resolve().parent
