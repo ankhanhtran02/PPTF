@@ -37,7 +37,7 @@ src
 #### Usage
 1. Set up environment:
 ```
-conda create -n venv python=3.12
+conda create -n venv python=3.10.11
 conda activate venv
 cd src
 pip install -r requirements.txt
